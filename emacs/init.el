@@ -9,6 +9,18 @@
 (global-font-lock-mode t)
 (set-frame-font "ricty-13.5")
 
+;;Ctrl+Tabでタブorウィンドウの切り替え
+(defun other-window-or-split (val)
+  (interactive)
+  (when (one-window-p)
+;    (split-window-horizontally) ;split horizontally
+    (split-window-vertically) ;split vertically
+  )
+  (other-window val))
+
+(global-set-key (kbd "<C-tab>") (lambda () (interactive) (other-window-or-split 1)))
+(global-set-key (kbd "<C-S-tab>") (lambda () (interactive) (other-window-or-split -1)))
+
 ;; キーバインド
 (define-key global-map "\C-h" 'delete-backward-char) ; 削除
 
@@ -36,6 +48,8 @@
 
 ;; Haskell.
 (add-to-list 'load-path "~/.emacs.d/elisp/haskell-mode-2.8.0")
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/haskell-mode/")
+(load "haskell-mode-autoloads.el")
 (autoload 'haskell-mode "haskell-mode" nil t)
 (autoload 'haskell-cabal "haskell-cabal" nil t)
 (add-to-list 'auto-mode-alist '("\\.hs$" . haskell-mode))
@@ -48,10 +62,31 @@
 (add-to-list 'load-path "~/.emacs.d/elisp/ghc-mod")
 
 (autoload 'ghc-init "ghc" nil t)
+
 (add-hook 'haskell-mode-hook
-          (lambda ()
+          '(lambda ()
             (ghc-init)
-            (flymake-mode)))
+            (flymake-mode)
+			))
+
+;; key-comboの設定用関数
+(defun my-haskell-key-combo ()
+  (key-combo-define-local (kbd "-") '("-" " -> " "--"))
+  ;; (key-combo-define-local (kbd "<=") '("<="))
+  (key-combo-define-local (kbd "<") '("<" " <- " " <= " " =<< " "<<" "<"))
+  (key-combo-define-local (kbd ">") '(">" " >= " " >>= " ">"))
+  (key-combo-define-local (kbd "=") '("=" " = " " == " "=="))
+  (key-combo-define-local (kbd ":") '(":" " :: " "::"))
+  )
+
+;; 後でまとめてadd-hookするための関数
+(defun my-haskell-add-hook ()
+  (turn-on-haskell-indentation)
+  (font-lock-mode)
+  (imenu-add-menubar-index)
+  (turn-on-haskell-doc-mode)
+  (my-haskell-key-combo)
+  )
 
 ;(setq haskell-program-name "/usr/bin/ghci")                                                         
 ;(add-hook 'haskell-mode-hook 'inf-haskell-mode) ;; enable                                           
@@ -59,3 +94,9 @@
   "Change focus to GHCi window after C-c C-l command"
   (other-window 1))
 (ad-activate 'inferior-haskell-load-file)
+(custom-set-variables
+ '(haskell-mode-hook 'my-haskell-add-hook)
+ '(haskell-indent-after-keywords (quote (("where" 4 0) ("of" 4) ("do" 4) ("mdo" 4) ("rec" 4) ("in" 4 0) ("{" 4) "if" "then" "else" "let")))
+ '(haskell-indent-offset 4)
+ '(haskell-indent-spaces 4)
+ )
