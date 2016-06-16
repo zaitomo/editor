@@ -1,3 +1,7 @@
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+(package-initialize)
 (set-language-environment "Japanese")
 (setq default-input-method "Japanese-mozc")
 (prefer-coding-system 'utf-8)
@@ -47,7 +51,7 @@
 (global-linum-mode t)
 
 ;; Haskell.
-(add-to-list 'load-path "~/.emacs.d/elisp/haskell-mode-2.8.0")
+(require 'haskell-mode)
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/haskell-mode/")
 (load "haskell-mode-autoloads.el")
 (autoload 'haskell-mode "haskell-mode" nil t)
@@ -61,42 +65,41 @@
 (add-to-list 'exec-path "~/.cabal/bin")  ; これをしてないと*Message*に"ghc-mod not found"と出て動かない
 (add-to-list 'load-path "~/.emacs.d/elisp/ghc-mod")
 
+(setq haskell-program-name "/usr/bin/ghci")
+
 (autoload 'ghc-init "ghc" nil t)
 
-(add-hook 'haskell-mode-hook
-          '(lambda ()
-            (ghc-init)
-            (flymake-mode)
-			))
-
-;; key-comboの設定用関数
-(defun my-haskell-key-combo ()
-  (key-combo-define-local (kbd "-") '("-" " -> " "--"))
-  ;; (key-combo-define-local (kbd "<=") '("<="))
-  (key-combo-define-local (kbd "<") '("<" " <- " " <= " " =<< " "<<" "<"))
-  (key-combo-define-local (kbd ">") '(">" " >= " " >>= " ">"))
-  (key-combo-define-local (kbd "=") '("=" " = " " == " "=="))
-  (key-combo-define-local (kbd ":") '(":" " :: " "::"))
-  )
+(add-hook 'haskell-mode-hook (lambda () (ghc-init) (flymake-mode)))
+(add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
 
 ;; 後でまとめてadd-hookするための関数
 (defun my-haskell-add-hook ()
   (turn-on-haskell-indentation)
   (font-lock-mode)
   (imenu-add-menubar-index)
+  (turn-on-haskell-indentation)
   (turn-on-haskell-doc-mode)
-  (my-haskell-key-combo)
+  (flycheck-mode)
   )
 
-;(setq haskell-program-name "/usr/bin/ghci")                                                         
-;(add-hook 'haskell-mode-hook 'inf-haskell-mode) ;; enable                                           
 (defadvice inferior-haskell-load-file (after change-focus-after-load)
   "Change focus to GHCi window after C-c C-l command"
   (other-window 1))
 (ad-activate 'inferior-haskell-load-file)
+
 (custom-set-variables
  '(haskell-mode-hook 'my-haskell-add-hook)
- '(haskell-indent-after-keywords (quote (("where" 4 0) ("of" 4) ("do" 4) ("mdo" 4) ("rec" 4) ("in" 4 0) ("{" 4) "if" "then" "else" "let")))
  '(haskell-indent-offset 4)
  '(haskell-indent-spaces 4)
  )
+
+;; auto-complete
+(require 'auto-complete)
+(require 'auto-complete-config)
+
+(require 'ac-haskell-process)
+(add-hook 'interactive-haskell-mode-hook 'ac-haskell-process-setup)
+(add-hook 'haskell-interactive-mode-hook 'ac-haskell-process-setup)
+(eval-after-load "auto-complete" '(add-to-list 'ac-modes 'haskell-interactive-mode))
+(put 'downcase-region 'disabled nil)
+
