@@ -63,24 +63,19 @@
 (add-to-list 'interpreter-mode-alist '("runhaskell" . haskell-mode)) ;#!/usr/bin/env runhaskell 用
 
 (add-to-list 'exec-path "~/.cabal/bin")  ; これをしてないと*Message*に"ghc-mod not found"と出て動かない
-(add-to-list 'load-path "~/.emacs.d/elisp/ghc-mod")
+(add-to-list 'load-path "~/.cabal/bin/ghc-mod")
 
 (setq haskell-program-name "/usr/bin/ghci")
 
 (autoload 'ghc-init "ghc" nil t)
 
-(add-hook 'haskell-mode-hook (lambda () (ghc-init) (flymake-mode)))
-(add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
-
-;; 後でまとめてadd-hookするための関数
-(defun my-haskell-add-hook ()
-  (turn-on-haskell-indentation)
-  (font-lock-mode)
-  (imenu-add-menubar-index)
-  (turn-on-haskell-indentation)
-  (turn-on-haskell-doc-mode)
-  (flycheck-mode)
-  )
+(add-hook 'haskell-mode-hook (lambda () (flymake-mode)))
+(add-hook 'haskell-mode-hook '(lambda ()
+								(ghc-init)
+								(local-set-key "\C-j" (lambda () (interactive)(insert " -> ")))
+								(local-set-key "\M-j" (lambda () (interactive)(insert " => ")))
+								(local-set-key "\C-l" (lambda ()(interactive)(insert " <- ")))
+								))
 
 (defadvice inferior-haskell-load-file (after change-focus-after-load)
   "Change focus to GHCi window after C-c C-l command"
@@ -88,7 +83,6 @@
 (ad-activate 'inferior-haskell-load-file)
 
 (custom-set-variables
- '(haskell-mode-hook 'my-haskell-add-hook)
  '(haskell-indent-offset 4)
  '(haskell-indent-spaces 4)
  )
@@ -102,4 +96,3 @@
 (add-hook 'haskell-interactive-mode-hook 'ac-haskell-process-setup)
 (eval-after-load "auto-complete" '(add-to-list 'ac-modes 'haskell-interactive-mode))
 (put 'downcase-region 'disabled nil)
-
