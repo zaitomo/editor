@@ -33,20 +33,20 @@
                               (t
                                (electric-indent-mode 1)))))
 
-;;            (setq-default indent-tabs-mode nil)
-;;            (add-hook 'makefile-mode-hook
-;;                      (lambda ()
-;;                        (setq indent-tabs-mode t)))
-;;            (setq-default tab-width 2)
-;;            (setq tab-width 2)
+            (setq-default indent-tabs-mode nil)
+            (add-hook 'makefile-mode-hook
+                      (lambda ()
+                        (setq indent-tabs-mode t)))
+            (setq-default tab-width 2)
+            (setq tab-width 2)
 
             ;;Ctrl+tでタブorウィンドウの切り替え
-	    (defun other-window-or-split ()
-	      (interactive)
-	      (when (one-window-p)
-		(split-window-horizontally))
-	      (other-window 1))
-	    (global-set-key (kbd "C-t") 'other-window-or-split)
+            (defun other-window-or-split ()
+              (interactive)
+              (when (one-window-p)
+                (split-window-horizontally))
+              (other-window 1))
+            (global-set-key (kbd "C-t") 'other-window-or-split)
 
             (defun newline-and-insert-newline-and-indent-after-brace ()
               (interactive)
