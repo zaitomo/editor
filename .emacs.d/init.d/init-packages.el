@@ -66,7 +66,7 @@
     smooth-scroll
     smooth-scrolling
     typescript
-    tabbar
+;;    tabbar
     textmate
     undo-tree
     undohist

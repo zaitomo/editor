@@ -40,13 +40,14 @@
 ;;            (setq-default tab-width 2)
 ;;            (setq tab-width 2)
 
-            ;;Ctrl+tでタブorウィンドウの切り替え
+            ;;Ctrl+Tabでタブorウィンドウの切り替え
 	    (defun other-window-or-split ()
 	      (interactive)
 	      (when (one-window-p)
 		(split-window-horizontally))
 	      (other-window 1))
-	    (global-set-key (kbd "C-t") 'other-window-or-split)
+	    ;;(global-set-key (kbd "<C-tab>") 'other-window-or-split)
+	    (global-se-key [(C-tab)] 'other-window-or-split)
 
             (defun newline-and-insert-newline-and-indent-after-brace ()
               (interactive)

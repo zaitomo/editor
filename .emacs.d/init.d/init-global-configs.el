@@ -43,16 +43,6 @@
             (ido-mode t)
             (ido-everywhere t)
 
-            ;; change window
-            (defun other-window-or-split ()
-              (interactive)
-              (when (one-window-p)
-                (split-window-horizontally))
-              (other-window 1))
-            (global-set-key (kbd "<C-tab>") 'other-window-or-split)
-            (global-set-key (kbd "C-t") 'other-window-or-split)
-            (global-set-key (kbd "C-x o") 'other-window-or-split)
-
             ;; キーバインド
             (define-key global-map "\C-h" 'delete-backward-char) ; 削除
 
